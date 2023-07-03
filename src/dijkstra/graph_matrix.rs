@@ -1,25 +1,23 @@
-use std::collections::HashMap;
 use crate::graph_type::*;
+use std::collections::HashMap;
 
 pub fn shortest_path_tree(graph_matrix: &GraphMatrix, source: usize) -> Option<Vec<ShortestPathTreeNode>> {
-
-    // check source node exists in the matrix
+    
+    // check if source node exists in the matrix
     let node_count = graph_matrix.len();
-    if  source >= node_count {
+    if source >= node_count {
         return None;
     }
 
     let mut visited = vec![false; node_count];
     let mut shortest_path_tree: Vec<ShortestPathTreeNode> = Vec::with_capacity(node_count);
     for node in 0..node_count {
-        shortest_path_tree.push(
-            ShortestPathTreeNode {
-                from: source,
-                to: node,
-                distance: u32::MAX,
-                previous: node,
-            }
-        );
+        shortest_path_tree.push(ShortestPathTreeNode {
+            from: source,
+            to: node,
+            distance: u32::MAX,
+            previous: node,
+        });
     }
 
     // starting from the source node
@@ -27,7 +25,6 @@ pub fn shortest_path_tree(graph_matrix: &GraphMatrix, source: usize) -> Option<V
     shortest_path_tree[node].distance = 0;
 
     while node != usize::MAX {
-
         let node_distance = shortest_path_tree[node].distance;
         visited[node] = true;
 
@@ -38,12 +35,12 @@ pub fn shortest_path_tree(graph_matrix: &GraphMatrix, source: usize) -> Option<V
         for index in 0..node_count {
             if !visited[index] {
                 let distance = column[index];
-                if  distance > 0 {
+                if distance > 0 {
                     let mut record = &mut shortest_path_tree[index];
                     let new_distance = node_distance + distance;
                     if record.distance > new_distance {
-                            record.distance = new_distance;
-                            record.previous = node;
+                        record.distance = new_distance;
+                        record.previous = node;
                     }
                 }
             }
@@ -57,12 +54,12 @@ pub fn shortest_path_tree(graph_matrix: &GraphMatrix, source: usize) -> Option<V
             if !visited[index] && record.distance < min_distance {
                 min_distance = record.distance;
                 node = index;
-            }    
+            }
         }
     }
 
     shortest_path_tree.sort_by(|a, b| a.to.cmp(&b.to));
-    
+
     Some(shortest_path_tree)
 }
 
@@ -89,14 +86,13 @@ pub fn graph_map_to_matrix(graph_map: &GraphMap) -> (Vec<String>, GraphMatrix) {
     }
 
     (names, matrix)
-
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::graph_samples;
     use crate::dijkstra::utils::*;
+    use crate::graph_samples;
 
     #[test]
     fn graph_matrix_sample1_test() {
@@ -130,25 +126,27 @@ mod tests {
 
         assert!(!graph_matrix.is_empty());
         assert_eq!(graph_matrix.len(), names.len());
-        
-        let option_expected_shortest_paths = shortest_paths_from_named(&names, &expected_shortest_paths_named);
+
+        let option_expected_shortest_paths =
+            shortest_paths_from_named(&names, &expected_shortest_paths_named);
         assert!(option_expected_shortest_paths.is_some());
         let expected_shortest_paths = option_expected_shortest_paths.unwrap();
-        let expected_shortest_path_tree =  build_path_tree_nodes_from_path(&expected_shortest_paths);
+        let expected_shortest_path_tree = build_path_tree_nodes_from_path(&expected_shortest_paths);
 
         // call the core function
-        let option_shortest_path_tree = shortest_path_tree(&graph_matrix, expected_shortest_path_tree[0].from);
+        let option_shortest_path_tree =
+            shortest_path_tree(&graph_matrix, expected_shortest_path_tree[0].from);
         assert!(option_shortest_path_tree.is_some());
         let shortest_path_tree = option_shortest_path_tree.unwrap();
         assert_eq!(shortest_path_tree, expected_shortest_path_tree);
 
         // check builded and expected paths
         for expected_shortest_path in expected_shortest_paths {
-            let option_shortest_path = build_shortest_path_from_tree(expected_shortest_path.to, &shortest_path_tree);
+            let option_shortest_path =
+                build_shortest_path_from_tree(expected_shortest_path.to, &shortest_path_tree);
             assert!(option_shortest_path.is_some());
             let shortest_path = option_shortest_path.unwrap();
             assert_eq!(shortest_path, expected_shortest_path);
         }
     }
-
 }
