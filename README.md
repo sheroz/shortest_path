@@ -1,5 +1,5 @@
-# Implementation samples of Shortest Path Algorithms
+# Implementation samples of Shortest Path algorithms
 
-1. Dijkstra using HashMap
-2. Dijkstra using Vector
-3. Dijkstra using Matrix
+1. Using HashMap
+2. Using Vector
+3. Using Matrix
